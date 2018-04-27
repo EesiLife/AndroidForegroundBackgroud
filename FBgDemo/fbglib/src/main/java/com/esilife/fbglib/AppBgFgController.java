@@ -3,6 +3,7 @@ package com.esilife.fbglib;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -91,6 +92,10 @@ public class AppBgFgController implements Application.ActivityLifecycleCallbacks
                     if (cacheFgPid <= 0 || FBUtils.checkPidActive(uid, cacheFgPid) <= 0) {
                         // other active process to fg, ignore
                         //app to fg
+                        Intent i = new Intent();
+                        i.setAction(FBBroadcastReceiver.FB_ACTION);
+                        i.putExtra(FBBroadcastReceiver.FB_STATUS, true);
+                        mContext.get().sendBroadcast(i);
                     }
                 }
             } else if (sActivityActiveCount <= 0 && 0 != cacheFgPid) {
@@ -100,6 +105,10 @@ public class AppBgFgController implements Application.ActivityLifecycleCallbacks
                 if (pid == cacheFgPid || cacheFgPid <= 0) {
                     FBUtils.writeToFile(statusFile, 0);
                     //app to bg
+                    Intent i = new Intent();
+                    i.setAction(FBBroadcastReceiver.FB_ACTION);
+                    i.putExtra(FBBroadcastReceiver.FB_STATUS, false);
+                    mContext.get().sendBroadcast(i);
                 }
             }
         } catch (Throwable e) {
